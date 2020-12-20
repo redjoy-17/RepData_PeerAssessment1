@@ -27,6 +27,7 @@ data<-subset(df,!is.na(steps))
 total_steps_day<-tapply(data$steps,data$date,sum)
 hist(total_steps_day,xlab="Total steps",main="Total steps per days")
 ```
+
 ## 3. Average and median values 
 
 ```{r average and median, results="asis"}
@@ -43,14 +44,16 @@ median_steps_day
 avg_steps_interval<-tapply(data$steps,data$interval,mean)
 plot(unique(data$interval),avg_steps_interval,type="l",xlab="",ylab="Avg_steps",main="Time series average daily activity")
 ```
+
 ## 5. Interval with the most steps in the day
-``` {r cleaning data, results="asis"}
+
+``` {r interval which most steps, results="asis"}
 
 data$interval[which.max(data$steps)]
 
 ``` 
 
-## 6.
+## 6. Cleaning the full data frame
 
 ``` {r cleaning data, echo=TRUE}
 try<-df$steps
@@ -59,24 +62,24 @@ newdata<-df
 newdata$steps<-try
 ``` 
 
-## 7.
+## 7. Histogram with the full dataframe
 
-``` {r time series,echo=TRUE, results="asis"}
+``` {r full dataframe analysis, echo=TRUE}
 total_steps_day_new<-tapply(newdata$steps,newdata$date,sum)
 hist(total_steps_day_new,xlab="Total steps",main="Total steps per days")
+```
 
+``` {r analysis, results="asis"}
 avg_steps_day_new<-tapply(newdata$steps,newdata$date,mean)
 median_steps_day_new<-tapply(newdata$steps,newdata$date,median)
-
 avg_steps_day_new
 median_steps_day_new
 
 ``` 
 
+## 8. Comparison between steps in weekdays and in the weekend
 
-## 8.
-
-``` {r time series, echo=TRUE}
+``` {r comparison, echo=TRUE}
 newdata$day<-weekdays(newdata$date)
 i=1
 l<-c(1:length(try))
