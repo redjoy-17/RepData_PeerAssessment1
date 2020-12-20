@@ -1,6 +1,8 @@
 ---
 title: "Analysis"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
@@ -14,8 +16,9 @@ library("lubridate")
 ## 1. Code for reading the files and processing the data
 
 ```{r Reading files, echo=TRUE}
-data<-read.csv('activity.csv',header=TRUE, sep=",")
-data$date<-as.Date(data$date)
+df<-read.csv('activity.csv',header=TRUE, sep=",")
+df$date<-as.Date(df$date)
+data<-subset(df,!is.na(steps))
 ```
 
 ## 2. Histogram of the total number of steps taken each day
@@ -26,35 +29,47 @@ hist(total_steps_day,xlab="Total steps",main="Total steps per days")
 ```
 ## 3. Average and median values 
 
-```{r average and median, echo=TRUE}
+```{r average and median, results="asis"}
 avg_steps_day<-tapply(data$steps,data$date,mean)
 median_steps_day<-tapply(data$steps,data$date,median)
+
+avg_steps_day
+median_steps_day
 ```
 
 ## 4. Time series plot of the average number of steps taken
 
 ``` {r time series, echo=TRUE}
-plot(unique(data$date),avg_steps_day,type="l",xlab="",ylab="Avg
-     steps",main="Time series average daily activity")
+avg_steps_interval<-tapply(data$steps,data$interval,mean)
+plot(unique(data$interval),avg_steps_interval,type="l",xlab="",ylab="Avg_steps",main="Time series average daily activity")
 ```
+## 5. Interval with the most steps in the day
+``` {r cleaning data, results="asis"}
+
+data$interval[which.max(data$steps)]
+
+``` 
 
 ## 6.
 
 ``` {r cleaning data, echo=TRUE}
-try<-data$steps
+try<-df$steps
 try[is.na(try)]<-0
-newdata<-data
+newdata<-df
 newdata$steps<-try
 ``` 
 
 ## 7.
 
-``` {r time series,echo=TRUE}
+``` {r time series,echo=TRUE, results="asis"}
 total_steps_day_new<-tapply(newdata$steps,newdata$date,sum)
 hist(total_steps_day_new,xlab="Total steps",main="Total steps per days")
 
 avg_steps_day_new<-tapply(newdata$steps,newdata$date,mean)
 median_steps_day_new<-tapply(newdata$steps,newdata$date,median)
+
+avg_steps_day_new
+median_steps_day_new
 
 ``` 
 
@@ -82,9 +97,10 @@ newdata_weekend<-subset(newdata,weekend==1)
 avg_steps_week<-tapply(newdata_week$steps,newdata_week$interval,mean)
 avg_steps_weekend<-tapply(newdata_weekend$steps,newdata_weekend$interval,mean)
 
-plot(unique(newdata$interval),avg_steps_week,type="l",xlab="",ylab="Average steps",main="Comparisons")
-points(unique(newdata$interval),avg_steps_weekend,col="red",type="l")
-legend("topleft",lwd=2,lty=1,col=c("black","red"),legend=c("week","weekend"),cex=.5)
+par(mfrow=c(1,2))
+plot(unique(newdata$interval),avg_steps_week,type="l",xlab="",ylab="Average steps",main="Week average steps")
+plot(unique(newdata$interval),avg_steps_weekend,type="l",xlab="",ylab="Average steps",main="Weekend average steps")
+
 
 ``` 
 
