@@ -1,0 +1,90 @@
+---
+title: "Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+directory<-"/Users/Gaia/Downloads"
+setwd(directory)
+
+library("lubridate")
+```
+
+## 1. Code for reading the files and processing the data
+
+```{r Reading files, echo=TRUE}
+data<-read.csv('activity.csv',header=TRUE, sep=",")
+data$date<-as.Date(data$date)
+```
+
+## 2. Histogram of the total number of steps taken each day
+
+```{r histrogram, echo=TRUE}
+total_steps_day<-tapply(data$steps,data$date,sum)
+hist(total_steps_day,xlab="Total steps",main="Total steps per days")
+```
+## 3. Average and median values 
+
+```{r average and median, echo=TRUE}
+avg_steps_day<-tapply(data$steps,data$date,mean)
+median_steps_day<-tapply(data$steps,data$date,median)
+```
+
+## 4. Time series plot of the average number of steps taken
+
+``` {r time series, echo=TRUE}
+plot(unique(data$date),avg_steps_day,type="l",xlab="",ylab="Avg
+     steps",main="Time series average daily activity")
+```
+
+## 6.
+
+``` {r cleaning data, echo=TRUE}
+try<-data$steps
+try[is.na(try)]<-0
+newdata<-data
+newdata$steps<-try
+``` 
+
+## 7.
+
+``` {r time series,echo=TRUE}
+total_steps_day_new<-tapply(newdata$steps,newdata$date,sum)
+hist(total_steps_day_new,xlab="Total steps",main="Total steps per days")
+
+avg_steps_day_new<-tapply(newdata$steps,newdata$date,mean)
+median_steps_day_new<-tapply(newdata$steps,newdata$date,median)
+
+``` 
+
+
+## 8.
+
+``` {r time series, echo=TRUE}
+newdata$day<-weekdays(newdata$date)
+i=1
+l<-c(1:length(try))
+for(i in l){
+if (newdata$day[i]=="Sabato" | newdata$day[i]=="Domenica"){
+  newdata$weekday[i]<-0
+  newdata$weekend[i]<-1
+}
+else{
+  newdata$weekday[i]<-1
+  newdata$weekend[i]<-0
+}
+  i=i+1
+}
+
+newdata_week<-subset(newdata,weekday==1)
+newdata_weekend<-subset(newdata,weekend==1)
+avg_steps_week<-tapply(newdata_week$steps,newdata_week$interval,mean)
+avg_steps_weekend<-tapply(newdata_weekend$steps,newdata_weekend$interval,mean)
+
+plot(unique(newdata$interval),avg_steps_week,type="l",xlab="",ylab="Average steps",main="Comparisons")
+points(unique(newdata$interval),avg_steps_weekend,col="red",type="l")
+legend("topleft",lwd=2,lty=1,col=c("black","red"),legend=c("week","weekend"),cex=.5)
+
+``` 
+
